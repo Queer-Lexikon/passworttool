@@ -7,7 +7,8 @@ def create_app():
     app.config.from_mapping(
         # don't do that:
         SECRET_KEY="bananenberg",
-        live=True
+        live=True,
+        host="aitne" # enter uberspace-host here
     )
 
     @app.route('/', methods=('GET', 'POST'))
@@ -38,7 +39,7 @@ def create_app():
             else:
                 flash("Da hat irgendwas gefehlt.")
 
-        return render_template("form.html", mailuser=mailuser)
+        return render_template("form.html", mailuser=mailuser, host=app.config.get("host"))
 
     @app.route("/favicon.ico")
     def favicon():
