@@ -5,7 +5,13 @@ import shlex
 
 from flask_ldap3_login import LDAP3LoginManager
 from flask_ldap3_login.forms import LDAPLoginForm
-from flask_login import LoginManager, UserMixin, login_user, login_required
+from flask_login import (
+    LoginManager,
+    UserMixin,
+    login_user,
+    login_required,
+    current_user,
+)
 
 
 def create_app():
@@ -51,13 +57,20 @@ def create_app():
             return redirect("/")
         return render_template("login.html", form=form)
 
+    def check_mail_account(post_mail: str, ldap_mail: str):
+        if "@" in post_mail:
+            return post_mail == ldap_mail
+        else:
+            return post_mail == ldap_mail.split("@")[0]
+
     @app.route("/", methods=("GET", "POST"))
     @login_required
     def index():
-        mailuser = "<Name>"
+        mailuser = current_user.data.get("mail")[0]
         if request.method == "POST":
             if (
                 request.form.get("user")
+                and check_mail_account(request.form.get("user"), mailuser)
                 and request.form.get("pass")
                 and request.form.get("pass")
             ):

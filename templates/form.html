@@ -13,7 +13,7 @@
         <div class="flash">{{ message }}</div>
     {% endfor %}
     <form method="post">
-        <p>Name: <input type="text" placeholder="einhorn@{{ domain }}"  name="user"/></p>
+        <p>Mail: <input type="text" value="{{ mailuser }}"  name="user"/></p>
         <p>Pass: <input type="password" name="pass"></p>
         <p>Pass: <input type="password" name="safe"></p>
         <p><input type="submit" value="Abschicken"></p>
