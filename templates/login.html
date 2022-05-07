@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Das neue Formular</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<section class="content">
+    <header><h2> Login </h2></header>
+
+    {% for message in get_flashed_messages() %}
+        <div class="flash">{{ message }}</div>
+    {% endfor %}
+    {% if form.errors %}
+        {{ form.errors }}
+    {% endif %}
+    <form method="post">
+        <p>Name: {{ form.username() }}</p>
+        <p>Pass: {{ form.password() }}</p>
+        <p>{{ form.submit() }}</p>
+        {{ form.hidden_tag() }}
+    </form>
+</section>
+</body>
+</html>

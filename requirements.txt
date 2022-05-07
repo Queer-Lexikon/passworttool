@@ -1,2 +1,5 @@
 flask
 waitress
+
+flask-login
+flask-ldap3-login

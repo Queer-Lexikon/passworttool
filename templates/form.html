@@ -13,7 +13,7 @@
         <div class="flash">{{ message }}</div>
     {% endfor %}
     <form method="post">
-        <p>Name: <input type="text" placeholder="einhorn@{{ host }}.uber.space"  name="user"/></p>
+        <p>Mail: <input type="text" value="{{ mailuser }}"  name="user"/></p>
         <p>Pass: <input type="password" name="pass"></p>
         <p>Pass: <input type="password" name="safe"></p>
         <p><input type="submit" value="Abschicken"></p>
@@ -25,7 +25,7 @@
     <p>Für den Mailempfang und -Versand brauch dein Mailprogramm noch Serverdaten. Die stehen hier:</p>
     <h3>Mailempfang: IMAP</h3>
     <dl>
-        <dt>Server:</dt><dd>aitne.uberspace.de</dd>
+        <dt>Server:</dt><dd>{{ host }}</dd>
         <dt>Port:</dt><dd>993</dd>
         <dt>SSL/TLS:</dt><dd>Ja. (nicht STARTTLS)</dd>
         <dt>Username:</dt><dd>{{ mailuser|escape }}@queer-lexikon.net</dd>
@@ -35,7 +35,7 @@
     <h3>Mailversand: SMTP</h3>
 
     <dl>
-        <dt>Server:</dt><dd>{{ host }}.uberspace.de</dd>
+        <dt>Server:</dt><dd>{{ host }}</dd>
         <dt>Port:</dt><dd>587 (auch, wenn dein Mailprogramm anderer Meinung ist, nicht 25 oder 465)</dd>
         <dt>SSL/TLS:</dt><dd>STARTTLS</dd>
         <dt>Username:</dt><dd>{{ mailuser|escape }}@{{ host }}.uber.space</dd>
