@@ -12,8 +12,31 @@ $ python3.9 -m venv venv
 $ source venv/bin/activate/
 $ pip install -r requirements.txt
 ```
+Das ganze brauch entsprechend LDAP-Konfiguration, die mit ein paar Informationen zum Uberspace in eine Datei mit Namen `config.json` darf. Für das Directory vom Queer Lexikon haben wir folgende Keys gebruacht, YMMV:
 
-Dann noch in `app.py` den uberspace-host vermerken. (Also den Teil vor .uber.space) und in `~/etc/services.d/` einen entsprechenden Service anlegen. 
+```json
+{
+    "UBERSPACE_HOST": "XXX.uberspace.de",
+    "DOMAIN": "XXX",
+
+    "SECRET_KEY": "XXX",
+    "LDAP_PORT": XXX,
+    "LDAP_HOST": "XXX",
+    "LDAP_USE_SSL": true,
+    "LDAP_BIND_USER_DN": "XXX",
+    "LDAP_BIND_USER_PASSWORD": "XXX",
+    "LDAP_BASE_DN": "XXX",
+    "LDAP_USER_DN": "XXX",
+    "LDAP_GROUP_DN": "XXX",
+    "LDAP_USER_RDN_ATTR": "XX",
+    "LDAP_USER_LOGIN_ATTR": "XX",
+    "LDAP_USER_OBJECT_FILTER": "(objectClass=people)",
+    "LDAP_GROUP_OBJECT_FILTER": "(objectClass=groupOfNames)"
+}
+```
+Die letzten beiden überschreiben defaults der Python-LDAP-Implementierung, die von Active Directories ausgehen.
+
+In `~/etc/services.d/` einen entsprechenden Service anlegen:
 
 ```
 [program:passworttool]
