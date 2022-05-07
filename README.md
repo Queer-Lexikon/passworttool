@@ -50,11 +50,8 @@ Dann läuft das, wenn über supervisord gestartet auf Port 8008 und kann für Zu
 
 ## Verwendung
 
-Das ist ziemlich entspannt: Im Browser den entsprechenden Link zum eingerichteten Web-Backend aufrufen, Mailadresse und gewünschtes neues Passwort eingeben und bestätigen und dann wird das gesetzt.
+Das ist ziemlich entspannt: Im Browser den entsprechenden Link zum eingerichteten Web-Backend aufrufen, mit LDAP-Zugangsdaten einloggen, Mailadresse und gewünschtes neues Passwort eingeben und bestätigen und dann wird das gesetzt. 
 
-Vorsicht: in dieser Fassung verifiziert nichts, ob die eingebende Person berechtigt ist, dieses Mailpasswort zu ändern. Deswegen am besten den Service für das Passworttool nur nach Bedarf starten und später wieder stoppen oder zum Beispiel über [flask-login](https://flask-login.readthedocs.io/en/latest/) oder so Authentifizierung verlangen. 
-
-Das ist auch auf der Agenda hier, eine Unterstützung für einen Login über ldap einzuführen.
 
 ### Warum Waitress?
 Weil keine Abhängigkeiten außerhalb der Standardbibliothek und weil der Werkzeug-WSGI nicht für das große weite Internet gemacht ist.
