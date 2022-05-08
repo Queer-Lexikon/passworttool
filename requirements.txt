@@ -3,3 +3,5 @@ waitress
 
 flask-login
 flask-ldap3-login
+flask-WTF
+wtforms

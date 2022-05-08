@@ -7,28 +7,28 @@
 </head>
 <body>
 <section class="content">
-    <header><h2> Dein Passwort neu setzen </h2></header>
+    <header><h2> Passwort für {{ mailuser }} neu setzen </h2></header>
 
     {% for message in get_flashed_messages() %}
         <div class="flash">{{ message }}</div>
     {% endfor %}
     <form method="post">
-        <p>Mail: <input type="text" value="{{ mailuser }}"  name="user"/></p>
-        <p>Pass: <input type="password" name="pass"></p>
-        <p>Pass: <input type="password" name="safe"></p>
+        {{ form.csrf_token }}
+        {{ form.password.label }} {{ form.password }}
+        {{ form.confirm.label }} {{ form.confirm }}
         <p><input type="submit" value="Abschicken"></p>
     </form>
 </section>
 
 <section class="content">
     <header><h2>Dein Mailprogramm glücklich machen</h2></header>
-    <p>Für den Mailempfang und -Versand brauch dein Mailprogramm noch Serverdaten. Die stehen hier:</p>
+    <p>Für den Mailempfang und -Versand brauch dein Mailprogramm noch Serverdaten. Falls die autmatische Erkennung nicht klappt, stehen die hier:</p>
     <h3>Mailempfang: IMAP</h3>
     <dl>
         <dt>Server:</dt><dd>{{ host }}</dd>
         <dt>Port:</dt><dd>993</dd>
         <dt>SSL/TLS:</dt><dd>Ja. (nicht STARTTLS)</dd>
-        <dt>Username:</dt><dd>{{ mailuser|escape }}@queer-lexikon.net</dd>
+        <dt>Username:</dt><dd>{{ mailuser|escape }}</dd>
         <dt>Passwort:</dt><dd>Das Passwort, was du hier gleich einrichtest.</dd>
     </dl>
 
@@ -38,7 +38,7 @@
         <dt>Server:</dt><dd>{{ host }}</dd>
         <dt>Port:</dt><dd>587 (auch, wenn dein Mailprogramm anderer Meinung ist, nicht 25 oder 465)</dd>
         <dt>SSL/TLS:</dt><dd>STARTTLS</dd>
-        <dt>Username:</dt><dd>{{ mailuser|escape }}@{{ host }}.uber.space</dd>
+        <dt>Username:</dt><dd>{{ mailuser|escape }}</dd>
         <dt>Passwort:</dt><dd>Das Passwort, was du hier gleich einrichtest.</dd>
     </dl>
 

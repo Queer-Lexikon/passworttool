@@ -12,6 +12,7 @@ from flask_login import (
     login_required,
     current_user,
 )
+from PasswordForm import ChangePassword
 
 
 def create_app():
@@ -57,50 +58,33 @@ def create_app():
             return redirect("/")
         return render_template("login.html", form=form)
 
-    def check_mail_account(post_mail: str, ldap_mail: str):
-        if "@" in post_mail:
-            return post_mail == ldap_mail
-        else:
-            return post_mail == ldap_mail.split("@")[0]
-
     @app.route("/", methods=("GET", "POST"))
     @login_required
     def index():
         mailuser = current_user.data.get("mail")[0]
+        form = ChangePassword()
         if request.method == "POST":
-            if (
-                request.form.get("user")
-                and check_mail_account(request.form.get("user"), mailuser)
-                and request.form.get("pass")
-                and request.form.get("pass")
-            ):
-                user = request.form.get("user").split("@")[0]
+            if form.validate_on_submit():
+                pw = request.form.get("pass")
+                user = mailuser.split("@")[0]
 
-                if request.form.get("pass") == request.form.get("safe"):
-                    pw = request.form.get("pass")
+                command = shlex.split(
+                    f"/usr/bin/uberspace mail user password -p {pw} {user}"
+                )
 
-                    command = shlex.split(
-                        f"/usr/bin/uberspace mail user password -p {pw} {user}"
-                    )
-                    if True:
-                        c = subprocess.run(command, capture_output=True)
-                        if c.stdout:
-                            flash(c.stdout.decode())
-                        if c.stderr:
-                            flash(c.stderr.decode())
-
-                        if c.returncode == 0:
-                            flash("Das hat vermutlich geklappt.")
-                            mailuser = user
-                    else:
-                        flash(command)
-                else:
-                    flash("Die Passwörter waren nicht gleich, versuch das mal nochmal")
+                c = subprocess.run(command, capture_output=True)
+                if c.stdout:
+                    flash(c.stdout.decode())
+                if c.stderr:
+                    flash(c.stderr.decode())
+                if c.returncode == 0:
+                    flash("Das hat vermutlich geklappt.")
             else:
-                flash("Da hat irgendwas gefehlt.")
+                flash("Die Passwörter waren nicht gleich, versuch das mal nochmal")
 
         return render_template(
             "form.html",
+            form=form,
             mailuser=mailuser,
             host=app.config["UBERSPACE_HOST"],
             domain=app.config["DOMAIN"],
