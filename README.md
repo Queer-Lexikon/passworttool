@@ -54,4 +54,4 @@ Das ist ziemlich entspannt: Im Browser den entsprechenden Link zum eingerichtete
 
 
 ### Warum Waitress?
-Weil keine Abhängigkeiten außerhalb der Standardbibliothek und weil der Werkzeug-WSGI nicht für das große weite Internet gemacht ist.
+Weil keine Abhängigkeiten außerhalb der Standardbibliothek und weil der Werkzeug-WSGI nicht für das große weite Internet gemacht ist. Im Prinzip sollte sich aber jeglicher WSGI-fähige Server dahinklemmen lassen. aus `create_app()` in der `app.py` fällt das passend Objekt raus, das zum Beispiel an gunicorn wie folgt anknoten lässt: `gunicorn -w 4 app:create_app`. Die Schreibweise mit dem Doppelpunkt ist auch für andere WSGI-Server üblich. Mit `python -m flask run` kommt das ganze auch im flask-developmentserver hoch. 
