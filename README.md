@@ -1,5 +1,5 @@
 # passworttool
-Mailpasswörter auf uberspace setzen. In Python. yay.
+Mailpasswörter auf uberspace setzen. In Python. Mit LDAP-Login. yay.
 
 ## Installation
 
@@ -20,7 +20,7 @@ Das ganze brauch entsprechend LDAP-Konfiguration, die mit ein paar Informationen
     "DOMAIN": "XXX",
 
     "SECRET_KEY": "XXX",
-    "LDAP_PORT": XXX,
+    "LDAP_PORT": 0,
     "LDAP_HOST": "XXX",
     "LDAP_USE_SSL": true,
     "LDAP_BIND_USER_DN": "XXX",
