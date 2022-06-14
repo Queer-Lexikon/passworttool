@@ -65,7 +65,7 @@ def create_app():
         form = ChangePassword()
         if request.method == "POST":
             if form.validate_on_submit():
-                pw = request.form.get("pass")
+                pw = request.form.get("password")
                 user = mailuser.split("@")[0]
 
                 command = shlex.split(
