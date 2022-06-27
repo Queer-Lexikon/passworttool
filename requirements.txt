@@ -1,7 +1,7 @@
-flask
-waitress
+flask==2.1.2
+waitress==2.1.1
 
-flask-login
-flask-ldap3-login
-flask-WTF
-wtforms
+flask-login==0.6.1
+flask-ldap3-login==0.9.17
+flask-WTF==3.0.1
+wtforms==3.0.1
