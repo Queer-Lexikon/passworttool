@@ -62,11 +62,16 @@ def create_app():
     @login_required
     def index():
         mailuser = current_user.data.get("mail")[0]
+        user = mailuser.split("@")[0]
+        if not app.config["DOMAIN"] in mailuser:
+            command = shlex.split("uberspace mail user list")
+            c = subprocess.run(command, capture_outout=True)
+            if user in c.stdout:
+                mailuser = f"{user}@{app.config["DOMAIN"]}"
         form = ChangePassword()
         if request.method == "POST":
             if form.validate_on_submit():
                 pw = request.form.get("password")
-                user = mailuser.split("@")[0]
 
                 command = shlex.split(
                     f"/usr/bin/uberspace mail user password -p {pw} {user}"
