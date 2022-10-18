@@ -67,7 +67,7 @@ def create_app():
             command = shlex.split("uberspace mail user list")
             c = subprocess.run(command, capture_outout=True)
             if user in c.stdout:
-                mailuser = f"{user}@{app.config["DOMAIN"]}"
+                mailuser = f"{user}@{app.config['DOMAIN']}"
         form = ChangePassword()
         if request.method == "POST":
             if form.validate_on_submit():
