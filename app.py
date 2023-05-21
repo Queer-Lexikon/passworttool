@@ -67,20 +67,28 @@ def create_app():
             if form.validate_on_submit():
                 pw = request.form.get("password")
                 user = mailuser.split("@")[0]
-
-                command = shlex.split(
-                    f"/usr/bin/uberspace mail user password -p {pw} {user}"
-                )
-
+                
+                # check user exists, create otherwise
+                command = shlex.split("/usr/bin/uberspace mail user list")
                 c = subprocess.run(command, capture_output=True)
-                if c.stdout:
+                if user in c.stdout.decode()
+                        verb = "password"
+                else:
+                        verb = "add"
+                
+                command = shlex.split(
+                    f"/usr/bin/uberspace mail user {verb} -p {pw} {user}"
+                )       
+                d = subprocess.run(command, capture_output=True)
+                if d.stdout:
                     flash(c.stdout.decode())
-                if c.stderr:
+                if d.stderr:
                     flash(c.stderr.decode())
-                if c.returncode == 0:
+                if d.returncode == 0:
                     flash("Das hat vermutlich geklappt.")
             else:
                 flash("Die Passwörter waren nicht gleich, versuch das mal nochmal")
+
 
         return render_template(
             "form.html",
