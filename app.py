@@ -94,17 +94,6 @@ def create_app():
             domain=app.config["DOMAIN"],
         )
 
-
-
-
-        return render_template(
-            "form.html",
-            form=form,
-            mailuser=mailuser,
-            host=app.config["UBERSPACE_HOST"],
-            domain=app.config["DOMAIN"],
-        )
-
     @app.route("/favicon.ico")
     def favicon():
         return redirect(url_for("static", filename="favicon.ico"))
