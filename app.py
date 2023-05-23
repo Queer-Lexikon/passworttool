@@ -74,7 +74,9 @@ def create_app():
                     verb = "password"
                 else:
                     verb = "add"
-                command = shlex.split(f"/usr/bin/uberspace mail user {verb} -p {pw} {user}")
+                command = shlex.split(
+                    f"/usr/bin/uberspace mail user {verb} -p {pw} {user}"
+                )
 
                 d = subprocess.run(command, capture_output=True)
                 if d.stdout:
