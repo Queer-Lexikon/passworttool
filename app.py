@@ -96,7 +96,6 @@ def create_app():
             domain=app.config["DOMAIN"],
         )
 
-
     @app.route("/favicon.ico")
     def favicon():
         return redirect(url_for("static", filename="favicon.ico"))
