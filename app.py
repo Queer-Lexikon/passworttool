@@ -67,24 +67,24 @@ def create_app():
             if form.validate_on_submit():
                 pw = request.form.get("password")
                 user = mailuser.split("@")[0]
-        # check user exists, create otherwise
-        command = shlex.split("/usr/bin/uberspace mail user list")
-        c = subprocess.run(command, capture_output=True)
-        if user in c.stdout.decode():
-            verb = "password"
-        else:
-            verb = "add"
-        command = shlex.split(f"/usr/bin/uberspace mail user {verb} -p {pw} {user}")
+                # check user exists, create otherwise
+                command = shlex.split("/usr/bin/uberspace mail user list")
+                c = subprocess.run(command, capture_output=True)
+                if mailuser in c.stdout.decode():
+                    verb = "password"
+                else:
+                    verb = "add"
+                command = shlex.split(f"/usr/bin/uberspace mail user {verb} -p {pw} {user}")
 
-        d = subprocess.run(command, capture_output=True)
-        if d.stdout:
-            flash(c.stdout.decode())
-        if d.stderr:
-            flash(c.stderr.decode())
-        if d.returncode == 0:
-            flash("Das hat vermutlich geklappt.")
-        else:
-            flash("Die Passwörter waren nicht gleich, versuch das mal nochmal")
+                d = subprocess.run(command, capture_output=True)
+                if d.stdout:
+                    flash(c.stdout.decode())
+                if d.stderr:
+                    flash(c.stderr.decode())
+                if d.returncode == 0:
+                    flash("Das hat vermutlich geklappt.")
+                else:
+                    flash("Die Passwörter waren nicht gleich, versuch das mal nochmal")
 
         return render_template(
             "form.html",
@@ -93,6 +93,7 @@ def create_app():
             host=app.config["UBERSPACE_HOST"],
             domain=app.config["DOMAIN"],
         )
+
 
     @app.route("/favicon.ico")
     def favicon():
