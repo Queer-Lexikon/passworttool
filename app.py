@@ -2,6 +2,7 @@ from flask import Flask, url_for, redirect, render_template, request, flash
 import json
 import subprocess
 import shlex
+import logging
 
 from flask_ldap3_login import LDAP3LoginManager
 from flask_ldap3_login.forms import LDAPLoginForm
@@ -61,32 +62,53 @@ def create_app():
     @app.route("/", methods=("GET", "POST"))
     @login_required
     def index():
+        """
+        What's in here?
+        1) take mailadress from ldap
+        2) if the form was sent, do more
+        3) strip @queer-lexikon.net from ldap-mail-blurb because "uberspace mail" likes them better
+        4) check if there is a mailbox with that name here locally
+        5) no mailbox? run command with "add"-verb
+        6) yes mailbox? run command with "password"-verb
+        7) flash any console output (stdout and -err) so users have some kind of error message, if things go wrong
+        8) if returncode is zero, flash success-message
+        """
+
         mailuser = current_user.data.get("mail")[0]
         form = ChangePassword()
         if request.method == "POST":
             if form.validate_on_submit():
                 pw = request.form.get("password")
                 user = mailuser.split("@")[0]
+                app.logger.info(f"Passwortreset für {user}")
                 # check user exists, create otherwise
                 command = shlex.split("/usr/bin/uberspace mail user list")
                 c = subprocess.run(command, capture_output=True)
-                if mailuser in c.stdout.decode():
+                if user in c.stdout.decode():
                     verb = "password"
+                    app.logger.info(f"{user} existiert, passwort wird geändert")
                 else:
                     verb = "add"
+                    app.logger.info(f"{user} existiert noch nicht, wird angelegt")
                 command = shlex.split(
                     f"/usr/bin/uberspace mail user {verb} -p {pw} {user}"
                 )
 
                 d = subprocess.run(command, capture_output=True)
                 if d.stdout:
-                    flash(c.stdout.decode())
+                    out = d.stdout.decode()
+                    app.logger.info(f"da sind Dinge im stdout: {out}")
+                    flash(out)
                 if d.stderr:
-                    flash(c.stderr.decode())
+                    err = d.stderr.decode()
+                    app.logger.error(f"da sind Dinge im stderr: {err}")
+                    flash(err)
                 if d.returncode == 0:
                     flash("Das hat vermutlich geklappt.")
+                    app.logger.info("Reset für {user} hat vermutlich geklappt")
                 else:
                     flash("Die Passwörter waren nicht gleich, versuch das mal nochmal")
+                    app.logger.info(f"Reset für {user} hat vermutlich nicht geklappt.")
 
         return render_template(
             "form.html",
@@ -108,6 +130,7 @@ def create_app():
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.DEBUG)
     app = create_app()
 
     from waitress import serve
