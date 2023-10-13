@@ -75,6 +75,8 @@ def create_app():
         """
 
         mailuser = current_user.data.get("mail")[0]
+        domain = app.config["DOMAIN"]
+        isLocalMail = domain in mailuser
         form = ChangePassword()
         if request.method == "POST":
             if form.validate_on_submit():
@@ -114,6 +116,7 @@ def create_app():
             "form.html",
             form=form,
             mailuser=mailuser,
+            isLocalMail=isLocalMail,
             host=app.config["UBERSPACE_HOST"],
             domain=app.config["DOMAIN"],
         )

@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
+{% if isLocalMail %}
 <section class="content">
     <header><h2> Passwort für {{ mailuser }} neu setzen </h2></header>
 
@@ -43,6 +44,11 @@
     </dl>
 
 </section>
-
+{% else %}
+<section class="content">
+    <header><h2>Fehler</h2></header>
+    <p>Die E-Mail-Adresse, die in deinem Account hinterlegt ist ({{ mailuser }}), ist keine {{ domain }} E-Mail-Adresse. Bitte wende dich an das Technikteam.</p>
+</section>
+{% endif %}
 </body>
 </html>
