@@ -145,3 +145,37 @@ input[type=submit] {
   align-self: start;
   min-width: 10em;
 }
+
+.login-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 32px;
+}
+
+.login-container > * {
+  flex-grow: 1;
+}
+
+.login-container > *:nth-child(2) {
+  flex-grow: 0;
+  background-color: lightgray;
+  width: 4px;
+  border-radius: 64px;
+  margin: 16px 0;
+}
+
+.keycloak-login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.keycloak-login-container > a {
+  width: 70%;
+  height: 3em;
+}
+
+.keycloak-login-container > a > button {
+  width: 100%;
+  height: 100%;
+}

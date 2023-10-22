@@ -9,18 +9,31 @@
 <section class="content">
     <header><h2> Login </h2></header>
 
-    {% for message in get_flashed_messages() %}
-        <div class="flash">{{ message }}</div>
+    {% for (msg_category, message) in get_flashed_messages(with_categories=True) %}
+        <div class="flash flash-{{ msg_category }}">{{ message }}</div>
     {% endfor %}
-    {% if form.errors %}
-        {{ form.errors }}
-    {% endif %}
-    <form method="post">
-        {{ form.username.label }} {{ form.username() }}
-        {{ form.password.label }} {{ form.password() }}
-        {{ form.submit() }}
-        {{ form.hidden_tag() }}
-    </form>
+
+    <div class="login-container">
+        <div>
+            {% if form.errors %}
+                {{ form.errors }}
+            {% endif %}
+            <form method="post">
+                {{ form.username.label }} {{ form.username() }}
+                {{ form.password.label }} {{ form.password() }}
+                {{ form.submit() }}
+                {{ form.hidden_tag() }}
+            </form>
+        </div>
+
+        <div></div>
+
+        <div class="keycloak-login-container">
+            <a href="{{ oidc_login_url }}">
+                <button>Login with Keycloak</button>
+            </a>
+        </div>
+    </div>
 </section>
 </body>
 </html>
