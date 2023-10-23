@@ -3,6 +3,7 @@ import json
 import subprocess
 import shlex
 import logging
+from datetime import datetime
 
 from flask_ldap3_login import LDAP3LoginManager
 from flask_ldap3_login.forms import LDAPLoginForm
@@ -13,7 +14,13 @@ from flask_login import (
     login_required,
     current_user,
 )
+from simple_openid_connect.data import TokenErrorResponse
+from simple_openid_connect.exceptions import AuthenticationFailedError
+
 from PasswordForm import ChangePassword
+from simple_openid_connect.client import OpenidClient
+
+logger = logging.getLogger("passworttool")
 
 
 def create_app():
@@ -23,6 +30,13 @@ def create_app():
     login_manager = LoginManager(app)
     login_manager.login_view = "login"
     ldap_manager = LDAP3LoginManager(app)
+    oidc = OpenidClient.from_issuer_url(
+        url=app.config["OIDC_ISSUER"],
+        authentication_redirect_uri=None,
+        client_id=app.config["OIDC_CLIENT_ID"],
+        client_secret=app.config["OIDC_CLIENT_SECRET"],
+        scope=app.config.get("OIDC_SCOPE") or "openid",
+    )
 
     users = {}
 
@@ -51,13 +65,56 @@ def create_app():
         users[dn] = user
         return user
 
+    @app.route("/login-callback", methods=("GET",))
+    def login_oidc_callback():
+        try:
+            auth_result = oidc.authorization_code_flow.handle_authentication_result(
+                request.url
+            )
+            if isinstance(auth_result, TokenErrorResponse):
+                flash(
+                    f"Login with Keycloak did not succeed: {auth_result.error_description}",
+                    category="error",
+                )
+                return redirect(url_for("login"))
+        except AuthenticationFailedError as e:
+            flash(f"Login with Keycloak did not succeed: {e}", category="error")
+            return redirect(url_for("login"))
+
+        id_token = oidc.decode_id_token(
+            auth_result.id_token, min_iat=datetime.utcnow().timestamp() - 30
+        )
+        user = load_user(id_token.sub)
+
+        if user is None:
+            logger.error(
+                f"login with keycloak did not succeed because a user object for id {id_token.sub} could not be loaded"
+            )
+            flash(
+                "Login with Keycloak did not succeed: Could not load user object for user id that was received from Keycloak",
+                category="error",
+            )
+            return redirect(url_for("login"))
+
+        login_user(user)
+        return redirect("/")
+
     @app.route("/login", methods=("GET", "POST"))
     def login():
+        if oidc.authentication_redirect_uri is None:
+            oidc.authentication_redirect_uri = url_for(
+                "login_oidc_callback", _external=True
+            )
+
         form = LDAPLoginForm()
         if form.validate_on_submit():
             login_user(form.user)
             return redirect("/")
-        return render_template("login.html", form=form)
+        return render_template(
+            "login.html",
+            form=form,
+            oidc_login_url=oidc.authorization_code_flow.start_authentication(),
+        )
 
     @app.route("/", methods=("GET", "POST"))
     @login_required
