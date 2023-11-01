@@ -4,6 +4,6 @@ waitress==2.1.2
 flask-login==0.6.2
 flask-ldap3-login==0.9.18
 flask-WTF==1.2.1
-wtforms==3.0.1
+wtforms==3.1.1
 
 Werkzeug==2.3.7
