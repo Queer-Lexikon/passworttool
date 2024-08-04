@@ -12,14 +12,11 @@ $ python3.11 -m venv venv
 $ source venv/bin/activate/
 $ pip install -r requirements.txt
 ```
-Das ganze brauch entsprechend OIDC-Konfiguration, die mit ein paar Informationen zum Uberspace in eine Datei mit Namen `config.json` darf. Für das Directory vom Queer Lexikon haben wir folgende Keys gebruacht, YMMV:
+Das ganze brauch entsprechend OIDC-Konfiguration, die mit ein paar Informationen zum Uberspace in eine Datei mit Namen `config.json` darf. 
 
 ```json
 {
-    "UBERSPACE_HOST": "XXX.uberspace.de",
     "DOMAIN": "XXX",
-
-    "SECRET_KEY": "forFlaskSecretness",
     
     "OIDC_CLIENT_SECRETS": {
         "web": {
