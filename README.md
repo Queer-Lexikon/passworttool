@@ -1,5 +1,5 @@
 # passworttool
-Mailpasswörter auf uberspace setzen. In Python. Mit LDAP-Login. yay.
+Mailpasswörter auf uberspace setzen. In Python. Mit OIDC-Login. yay.
 
 ## Installation
 
@@ -8,33 +8,35 @@ Im Wesentlichen nur zwei Stück: Flask und Waitress (als WSGI-Server). Am besten
 ```bash
 $ git clone https://github.com/Queer-Lexikon/passworttool.git
 $ cd passworttool
-$ python3.9 -m venv venv
+$ python3.11 -m venv venv
 $ source venv/bin/activate/
 $ pip install -r requirements.txt
 ```
-Das ganze brauch entsprechend LDAP-Konfiguration, die mit ein paar Informationen zum Uberspace in eine Datei mit Namen `config.json` darf. Für das Directory vom Queer Lexikon haben wir folgende Keys gebruacht, YMMV:
+Das ganze brauch entsprechend OIDC-Konfiguration, die mit ein paar Informationen zum Uberspace in eine Datei mit Namen `config.json` darf. Für das Directory vom Queer Lexikon haben wir folgende Keys gebruacht, YMMV:
 
 ```json
 {
     "UBERSPACE_HOST": "XXX.uberspace.de",
     "DOMAIN": "XXX",
 
-    "SECRET_KEY": "XXX",
-    "LDAP_PORT": 0,
-    "LDAP_HOST": "XXX",
-    "LDAP_USE_SSL": true,
-    "LDAP_BIND_USER_DN": "XXX",
-    "LDAP_BIND_USER_PASSWORD": "XXX",
-    "LDAP_BASE_DN": "XXX",
-    "LDAP_USER_DN": "XXX",
-    "LDAP_GROUP_DN": "XXX",
-    "LDAP_USER_RDN_ATTR": "XX",
-    "LDAP_USER_LOGIN_ATTR": "XX",
-    "LDAP_USER_OBJECT_FILTER": "(objectClass=people)",
-    "LDAP_GROUP_OBJECT_FILTER": "(objectClass=groupOfNames)"
+    "SECRET_KEY": "forFlaskSecretness",
+    
+    "OIDC_CLIENT_SECRETS": {
+        "web": {
+            "issuer": "",
+            "auth_uri": "",
+            "client_id": "",
+            "client_secret": "",
+            "redirect_uris": [
+                "http://localhost:8008/*"
+            ]
+          
+        }
+    }
 }
 ```
-Die letzten beiden überschreiben defaults der Python-LDAP-Implementierung, die von Active Directories ausgehen.
+Die Redirect-Uri ist fine für lokales Testen, in Prod ist das wahrscheinlich eher ungefähr das, was in domain steht oder ein subdomain davon.
+Alle Angaben innerhalb von Web kommen aus dem IDP. Alles davon, außer dem Client-Secret kann im Prinzip auch in Version-Control drin sein.
 
 In `~/etc/services.d/` einen entsprechenden Service anlegen:
 
@@ -50,8 +52,12 @@ Dann läuft das, wenn über supervisord gestartet auf Port 8008 und kann für Zu
 
 ## Verwendung
 
-Das ist ziemlich entspannt: Im Browser den entsprechenden Link zum eingerichteten Web-Backend aufrufen, mit LDAP-Zugangsdaten einloggen, Mailadresse und gewünschtes neues Passwort eingeben und bestätigen und dann wird das gesetzt. 
+Das ist ziemlich entspannt: Im Browser den entsprechenden Link zum eingerichteten Web-Backend aufrufen, mit OIDC-Zugangsdaten einloggen, Mailadresse und gewünschtes neues Passwort eingeben und bestätigen und dann wird das gesetzt. 
 
 
 ### Warum Waitress?
 Weil keine Abhängigkeiten außerhalb der Standardbibliothek und weil der Werkzeug-WSGI nicht für das große weite Internet gemacht ist. Im Prinzip sollte sich aber jeglicher WSGI-fähige Server dahinklemmen lassen. aus `create_app()` in der `app.py` fällt das passend Objekt raus, das zum Beispiel an gunicorn wie folgt anknoten lässt: `gunicorn -w 4 app:create_app`. Die Schreibweise mit dem Doppelpunkt ist auch für andere WSGI-Server üblich. Mit `python -m flask run` kommt das ganze auch im flask-developmentserver hoch. 
+
+## Und sonst so?
+
+Das hier läuft in der Infrastruktur vom Queer Lexikon, der Login gegen das Keycloak hier klappt, Python3.11 ist sowohl auf dem Dev-System als auch auf dem Uberspace-Host fine, andere Systeme oder Kombinationen sind nicht getestet, diesdas.
