@@ -3,6 +3,7 @@ import json
 import subprocess
 import shlex
 import logging
+import os
 import secrets
 
 from flask_oidc import OpenIDConnect
@@ -12,8 +13,18 @@ from PasswordForm import ChangePassword
 
 def create_app():
     app = Flask(__name__)
-    app.config.update(SECRET_KEY=secrets.token_hex())
+    app.config.update(SECRET_KEY=secrets.token_hex(), UBERSPACE_HOST=os.uname().nodename)
+
     app.config.from_file("config.json", load=json.load)
+
+    if "DOMAIN" not in app.config or app.config.get("DOMAIN") == "":
+        domain = ""
+        command = shlex.split("/usr/bin/uberspace mail domain list")
+        c = subprocess.run(command, capture_output=True)
+        domains = [line for line in c.stdout.decode() if "INVALID" not in line]
+        domain = domains[0].replace("\n", "")
+        app.config.update(DOMAIN=domain)
+    
 
     oidc = OpenIDConnect()
 
@@ -68,9 +79,9 @@ def create_app():
                 if d.returncode == 0:
                     flash("Das hat vermutlich geklappt.")
                     app.logger.info("Reset für {user} hat vermutlich geklappt")
-                else:
-                    flash("Die Passwörter waren nicht gleich, versuch das mal nochmal")
-                    app.logger.info(f"Reset für {user} hat vermutlich nicht geklappt.")
+            else:
+                flash("Die Passwörter waren nicht gleich, versuch das mal nochmal")
+                app.logger.info(f"Reset für {user} hat vermutlich nicht geklappt.")
 
         return render_template(
             "form.html",
