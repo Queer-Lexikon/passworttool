@@ -3,6 +3,7 @@ import json
 import subprocess
 import shlex
 import logging
+import secrets
 
 from flask_oidc import OpenIDConnect
 
@@ -11,6 +12,7 @@ from PasswordForm import ChangePassword
 
 def create_app():
     app = Flask(__name__)
+    app.config.update(SECRET_KEY=secrets.token_hex())
     app.config.from_file("config.json", load=json.load)
 
     oidc = OpenIDConnect()

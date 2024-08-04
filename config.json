@@ -1,7 +1,6 @@
 {
     "UBERSPACE_HOST": "",
     "DOMAIN": "",
-    "SECRET_KEY": "",
     
     "OIDC_CLIENT_SECRETS": {
         "web": {
