@@ -1,18 +1,11 @@
-from flask import Flask, url_for, redirect, render_template, request, flash
+from flask import Flask, url_for, redirect, render_template, request, flash, session
 import json
 import subprocess
 import shlex
 import logging
 
-from flask_ldap3_login import LDAP3LoginManager
-from flask_ldap3_login.forms import LDAPLoginForm
-from flask_login import (
-    LoginManager,
-    UserMixin,
-    login_user,
-    login_required,
-    current_user,
-)
+from flask_oidc import OpenIDConnect
+
 from PasswordForm import ChangePassword
 
 
@@ -20,47 +13,12 @@ def create_app():
     app = Flask(__name__)
     app.config.from_file("config.json", load=json.load)
 
-    login_manager = LoginManager(app)
-    login_manager.login_view = "login"
-    ldap_manager = LDAP3LoginManager(app)
+    oidc = OpenIDConnect()
 
-    users = {}
-
-    class User(UserMixin):
-        def __init__(self, dn, username, data):
-            self.dn = dn
-            self.username = username
-            self.data = data
-
-        def __repr__(self):
-            return self.dn
-
-        def get_id(self):
-            return self.dn
-
-    @login_manager.user_loader
-    def load_user(id):
-        if id in users:
-            return users[id]
-        else:
-            return None
-
-    @ldap_manager.save_user
-    def save_user(dn, username, data, memberships):
-        user = User(dn, username, data)
-        users[dn] = user
-        return user
-
-    @app.route("/login", methods=("GET", "POST"))
-    def login():
-        form = LDAPLoginForm()
-        if form.validate_on_submit():
-            login_user(form.user)
-            return redirect("/")
-        return render_template("login.html", form=form)
+    oidc.init_app(app)
 
     @app.route("/", methods=("GET", "POST"))
-    @login_required
+    @oidc.require_login
     def index():
         """
         What's in here?
@@ -74,7 +32,7 @@ def create_app():
         8) if returncode is zero, flash success-message
         """
 
-        mailuser = current_user.data.get("mail")[0]
+        mailuser = session["oidc_auth_profile"].get("email")
         domain = app.config["DOMAIN"]
         isLocalMail = domain in mailuser
         form = ChangePassword()
