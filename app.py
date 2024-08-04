@@ -13,7 +13,9 @@ from PasswordForm import ChangePassword
 
 def create_app():
     app = Flask(__name__)
-    app.config.update(SECRET_KEY=secrets.token_hex(), UBERSPACE_HOST=os.uname().nodename)
+    app.config.update(
+        SECRET_KEY=secrets.token_hex(), UBERSPACE_HOST=os.uname().nodename
+    )
 
     app.config.from_file("config.json", load=json.load)
 
@@ -24,7 +26,6 @@ def create_app():
         domains = [line for line in c.stdout.decode() if "INVALID" not in line]
         domain = domains[0].replace("\n", "")
         app.config.update(DOMAIN=domain)
-    
 
     oidc = OpenIDConnect()
 
