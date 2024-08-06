@@ -1,4 +1,5 @@
 from flask import Flask, url_for, redirect, render_template, request, flash, session
+from werkzeug.middleware.proxy_fix import ProxyFix
 import json
 import subprocess
 import shlex
@@ -13,6 +14,7 @@ from PasswordForm import ChangePassword
 
 def create_app():
     app = Flask(__name__)
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1)
     app.config.update(
         SECRET_KEY=secrets.token_hex(), UBERSPACE_HOST=os.uname().nodename
     )
