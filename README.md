@@ -24,7 +24,6 @@ Das ganze brauch entsprechend OIDC-Konfiguration, die mit ein paar Informationen
     "OIDC_CLIENT_SECRETS": {
         "web": {
             "issuer": "",
-            "auth_uri": "",
             "client_id": "",
             "client_secret": "",
             "redirect_uris": [
